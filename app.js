@@ -1,10 +1,41 @@
-var express = require('express');
-var app = express();
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const app = express();
+app.use(cors());
+const db = require("./db");
+const port = 3000;
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
+app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: true
+  })
+);
+
+app.get("/items", db.getItems);
+
+app.post("/api/orders/insert", function(req, res) {
+  if (req.body.firstName == "failtest") {
+    console.log("failtest");
+    res.json({ success: false });
+  } else {
+    var result = db.insertOrder(req.body);
+    if (result == null || result == undefined) {
+      console.log("result success");
+      res.json({ success: true });
+    } else {
+      console.log("result failure");
+      res.json({ success: false });
+    }
+  }
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+var router = express.Router();
+
+app.use("/router", router);
+
+
+app.listen(port, () => {
+  console.log(`App running on port ${port}.`);
 });
