@@ -1,4 +1,6 @@
 const { Pool } = require("pg");
+const fs = require('fs');
+
 
 const pool = new Pool({
   user: "postgres",
@@ -8,10 +10,25 @@ const pool = new Pool({
   port: 5432
 });
 
+// const getItems = (request, response) => {
+//   pool.query('SELECT * FROM "ITEMS"', (error, results) => {
+//     var result;
+//     if(error){
+//       console.log(error);
+//     }else{
+//        result = results.rows; 
+//     }
+//     console.log(result);
+//     response.status(200).json(result);
+//   });
+// };
+
 const getItems = (request, response) => {
-  pool.query('SELECT * FROM "ITEMS"', (error, results) => {
-    response.status(200).json(error ? error : results.rows);
-  });
+  fs.readFile('./data/items.json', (err, data) => {
+    if (err) throw err;
+    let items = JSON.parse(data);
+    response.status(200).json(items);
+});
 };
 
 const insertOrder = order => {
